@@ -1,0 +1,155 @@
+        <CompuCell3D Revision="20200724" Version="4.2.2">
+   
+   <Metadata>
+      
+      <!-- Basic properties simulation -->
+      <NumberOfProcessors>2</NumberOfProcessors>
+      <DebugOutputFrequency>10</DebugOutputFrequency>
+      <!-- <NonParallelModule Name="Potts"/> -->
+   </Metadata>
+   
+   <Potts>
+      
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="256" y="256" z="1"/>
+      <Steps>600</Steps>
+      <Temperature>10.0</Temperature>
+      <NeighborOrder>1</NeighborOrder>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="senCell"/>
+      <CellType TypeId="2" TypeName="tolCell"/>
+   </Plugin>
+   
+   <Plugin Name="Volume"/>
+   
+   <Plugin Name="CenterOfMass">
+      
+      <!-- Module tracking center of mass of each cell -->
+   </Plugin>
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">10.1</Energy>
+      <Energy Type1="Medium" Type2="tolCell">5.0</Energy>
+      <Energy Type1="Medium" Type2="senCell">5.0</Energy>
+      <Energy Type1="tolCell" Type2="tolCell">-5.0</Energy>
+      <Energy Type1="tolCell" Type2="senCell">4.1</Energy>
+      <Energy Type1="senCell" Type2="senCell">7.1</Energy>
+      <NeighborOrder>4</NeighborOrder>
+   </Plugin>
+   <Plugin Name="NeighborTracker">
+   
+   <!-- Module tracking neighboring cells of each cell -->
+</Plugin>
+
+   
+   <Steppable Type="DiffusionSolverFE">   
+      <!-- Specification of PDE solvers -->
+      <DiffusionField Name="NUTRIENT">
+         <DiffusionData>
+            <FieldName>nutrient</FieldName>
+            <GlobalDiffusionConstant>25</GlobalDiffusionConstant>
+            <GlobalDecayConstant>0.0</GlobalDecayConstant>
+            <!-- Additional options are: -->
+            <InitialConcentrationExpression>5.5</InitialConcentrationExpression>
+            <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
+            <DiffusionCoefficient CellType="senCell">18</DiffusionCoefficient>
+            <DiffusionCoefficient CellType="tolCell">8</DiffusionCoefficient>
+            <DecayCoefficient CellType="senCell">0.1</DecayCoefficient>
+            <DecayCoefficient CellType="tolCell">0.04</DecayCoefficient>
+         </DiffusionData>
+         
+<!--            <SecretionData> -->            
+
+<!--                         <Secretion Type="senCell">-0.02</Secretion> -->
+<!--                         <Secretion Type="tolCell">-0.01</Secretion> -->
+
+<!--          </SecretionData> -->
+         
+         <BoundaryConditions>
+            <Plane Axis="X">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantDerivative PlanePosition="Min" Value="10.0"/> -->
+            </Plane>
+            <Plane Axis="Y">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
+            </Plane>
+         </BoundaryConditions>
+      </DiffusionField> -->
+      
+      <DiffusionField Name="STRESS">
+         <DiffusionData>
+            <FieldName>stress</FieldName>
+            <GlobalDiffusionConstant>14</GlobalDiffusionConstant>
+<!--             <GlobalDecayConstant>1e-05</GlobalDecayConstant> -->
+            <!-- Additional options are: -->
+            <InitialConcentrationExpression>0.0</InitialConcentrationExpression>
+            
+<!--             <DoNotDiffuseTo>Medium</DoNotDiffuseTo> -->
+
+            <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
+            <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
+            <DiffusionCoefficient CellType="senCell">22</DiffusionCoefficient>
+            <DiffusionCoefficient CellType="tolCell">22</DiffusionCoefficient>
+            <DecayCoefficient CellType="senCell">0.0</DecayCoefficient>
+            <DecayCoefficient CellType="tolCell">0.005</DecayCoefficient>
+         </DiffusionData>
+         <SecretionData>
+            <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
+            
+            <!-- Uniform secretion Definition -->
+            <SecretionOnContact SecreteOnContactWith="tolCell" Type="tolCell">0.015</SecretionOnContact>
+            <SecretionOnContact SecreteOnContactWith="senCell" Type="tolCell">0.05</SecretionOnContact>
+            <SecretionOnContact SecreteOnContactWith="senCell" Type="senCell">0.04</SecretionOnContact>
+            <SecretionOnContact SecreteOnContactWith="tolCell" Type="senCell">-0.15</SecretionOnContact>
+
+<!--                         <Secretion Type="senCell">0.008</Secretion> -->
+<!--                         <Secretion Type="tolCell">-0.01</Secretion> -->
+
+            <!-- <ConstantConcentration Type="tolCell">0.1</ConstantConcentration> -->
+         </SecretionData>
+         <BoundaryConditions>
+            <Plane Axis="X">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantDerivative PlanePosition="Min" Value="10.0"/> -->
+            </Plane>
+            <Plane Axis="Y">
+               <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+               <ConstantDerivative PlanePosition="Max" Value="0.0"/>
+               <!-- Other options are (examples): -->
+               <!-- <Periodic/> -->
+               <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
+            </Plane>
+         </BoundaryConditions>
+      </DiffusionField>
+
+   </Steppable>
+   
+   <Steppable Type="BlobInitializer">
+      
+      <!-- Initial layout of cells in the form of spherical (circular in 2D) blob -->
+      <Region>
+         <Center x="128" y="128" z="0"/>
+         <Radius>40</Radius>
+         <Gap>7</Gap>
+         <Width>4</Width>
+<!--          <Types>senCell,senCell,senCell,senCell,tolCell</Types> -->
+         <Types>tolCell,tolCell,tolCell,tolCell,senCell</Types>
+      </Region>
+   </Steppable>
+</CompuCell3D>

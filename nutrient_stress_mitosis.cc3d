@@ -1,5 +1,4 @@
 <Simulation version="4.2.2">
-   <XMLScript Type="XMLScript">Simulation/nutrient_stress_mitosis.xml</XMLScript>
    <PythonScript Type="PythonScript">Simulation/nutrient_stress_mitosis.py</PythonScript>
    <Resource Type="Python">Simulation/nutrient_stress_mitosisSteppables.py</Resource>
 </Simulation>

@@ -44,15 +44,14 @@ class GrowthSteppable(SteppableBasePy):
         SteppableBasePy.__init__(self,frequency)
     
     def start(self):
-        
-        self.plot_win = self.add_new_plot_window(title='Tolerant and sensitive cells',
-                                                 x_axis_title='MonteCarlo Step (MCS)',
-                                                 y_axis_title='total population', x_scale_type='linear', y_scale_type='linear',
-                                                 grid=False)
+        # self.plot_win = self.add_new_plot_window(title='Tolerant and sensitive cells',
+        #                                         x_axis_title='MonteCarlo Step (MCS)',
+        #                                         y_axis_title='total population', x_scale_type='linear', y_scale_type='linear',
+        #                                         grid=False)
         
         #self.plot_win.add_plot("sen", style='Dots', color='red', size=3)
         #self.plot_win.add_plot("tol", style='Dots', color='green', size=3)
-        
+
         self.initnumtolcell=len(self.cell_list_by_type(self.TOLCELL))
         self.initnumsencell=len(self.cell_list_by_type(self.SENCELL))
         numiter=int(pg.input_object[9])
@@ -69,6 +68,7 @@ class GrowthSteppable(SteppableBasePy):
         self.tolLCoef2 = pg.input_object[6]
         self.tolLCoef3 = pg.input_object[7]
         self.tolMinGrwthNut = pg.input_object[8]
+        print("starting time steps .... ") 
  
     def step(self, mcs):       
 
@@ -123,10 +123,12 @@ class GrowthSteppable(SteppableBasePy):
 
                 #cell.targetVolume += -0.4*np.log((1-ntrntAtCOM/5.51)/(55*ntrntAtCOM/5.51)) - 0.38*max(0,-np.log((10.0-strssAtCOM)/(99.5*ntrntAtCOM))) 
         self.timstp+=1   
-        #print("timstp = ", self.timstp) 
+        print("+", end="",flush=True) 
+        #print("time step: ", self.timstp) 
         # arguments are (name of the data series, x, y)
     def finish(self):
         pg.return_object = [self.tolcellfc, self.sencellfc]
+        print("\n ending the time stepping") 
         # if (self.timstp==600):
         #         output = np.column_stack((self.tolcellfc.flatten(),self.sencellfc.flatten()))
         #         np.savetxt("exp.csv", output, delimiter=",")

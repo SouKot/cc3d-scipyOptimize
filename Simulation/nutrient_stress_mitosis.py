@@ -12,9 +12,11 @@ def configure_simulation():
         "CompuCell3D", {"Revision": "20200724", "Version": "4.2.2"}
     )
     pg = CompuCellSetup.persistent_globals
+    print("Current parameters value:", end=" ",flush=True)
+    print(pg.input_object)
     MetadataElmnt = CompuCell3DElmnt.ElementCC3D("Metadata")
     MetadataElmnt.ElementCC3D("NumberOfProcessors", {}, "1")
-    MetadataElmnt.ElementCC3D("DebugOutputFrequency", {}, "100")
+    MetadataElmnt.ElementCC3D("DebugOutputFrequency", {}, "600")
     PottsElmnt = CompuCell3DElmnt.ElementCC3D("Potts")
     PottsElmnt.ElementCC3D("Dimensions", {"x": "256", "y": "256", "z": "1"})
     PottsElmnt.ElementCC3D("Steps", {}, str(int(pg.input_object[9])))

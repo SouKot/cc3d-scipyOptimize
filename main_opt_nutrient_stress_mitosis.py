@@ -18,16 +18,16 @@ import time
 # General setup
 
 # Specify location of simulation file
-simulation_fname = '/media/sourabh/SSD32/424_auto/Demos/CallableCC3D/nutrient_stress_mitosis_5/nutrient_stress_mitosis.cc3d'
+simulation_fname ='/media/sourabh/SSD32/424_auto/Demos/CallableCC3D/cc3d-scipyOptimize/nutrient_stress_mitosis.cc3d'
 # Specify root directory of results
 res_output_root = 'CC3DCallerOutput'
 # Specify number of workers
-num_workers = 2
+num_workers = 4
 
 #ratio_val=[10,20,11,14,41] # red to green ratio
-ratio_val=[10] # red to green ratio
+ratio_val=[10,20,11,14,41] # red to green ratio
 
-numiter=300
+numiter=600
 
 def getSmoothData(xl_sheet, numratio):
     # get_ipython().run_line_magic('matplotlib', 'widget')
@@ -150,17 +150,18 @@ def run_trials_no_store(num_runs, x0):
     tasks.join()
 
     # Return mean result
-    result = results.get()
-    tol = result['result'][0]
-    result = results.get()
-    sen = result['result'][1]
-    
+    tol=[]
+    sen=[]
     num_ratio=len(ratio_val)
-    while num_ratio-2:
+    for ratio in range(num_ratio):
         result = results.get()
-        tol = np.concatenate((tol,result['result'][0]))
-        sen = np.concatenate((sen,result['result'][1]))
-        num_ratio -= 1
+        if ratio_val[ratio]==10:
+            tol = np.concatenate((tol,result['result'][0]))
+        elif ratio_val[ratio]==20:
+            sen = np.concatenate((sen,result['result'][1]))
+        else:
+            tol = np.concatenate((tol,result['result'][0]))
+            sen = np.concatenate((sen,result['result'][1]))
 #    print(tol.shape)
 #    print(sen.shape)
 #    input('press any key....!!!')
@@ -204,6 +205,7 @@ def run_trials_no_store_serial(num_runs, x0):
                                 sim_input=np.concatenate(([i],x0,[numiter]))
                                 )
         result=cc3d_caller.run()
+
         if i==10:
             tol = result['result'][0]
         elif i==20:
@@ -233,12 +235,10 @@ def main():
     # Number of simulation runs per evaluation
     num_runs = len(ratio_val)
     # Maximum number of optimization iterations
-    num_iterations = 1
+    num_iterations = 10
     
     # Target horizontal center of mass after 1k MCS
-    xl_sheet=pd.read_excel('/media/sourabh/SSD128/COH_project/'
-                             'Atish_gameThoery/excel data files/3d/'
-                             'VId1066coculturespheroid.xlsx',sheet_name=[0,1])
+    xl_sheet=pd.read_excel('VId1066coculturespheroid.xlsx',sheet_name=[0,1])
     xl_sheet[0] = xl_sheet[0].dropna(axis='columns', how='all') # drop all null columns
     xl_sheet[1] = xl_sheet[1].dropna(axis='columns', how='all')
     #time0 = xl_sheet[0].iloc[:, 0].to_numpy()
@@ -264,23 +264,35 @@ def main():
 
     # Cost function of optimization
     def cost_fun(x):
-        res = run_trials_no_store_serial(num_runs, x)
-        # print("HELLO!!")
-        # input("press any key")
+        res = run_trials_no_store(num_runs, x)
         return np.sqrt(np.sum((res - smd) ** 2))
 
+    iter_out = 'opt_iter.dat'
+    with open(iter_out, 'w') as fout:
+        fout.write('Optimization iterations: \n')
+    fout.close()
+
+    def print_fun(x, f, accepted):
+        with open(iter_out, 'a') as fout:
+            fout.write("at minimum %.4f accepted %d\n" % (f, int(accepted)))
+            fout.writelines(["with parmeters: ",str(x),"\n"] )
+            fout.close()
+
     # Bounds for chemotactic Lagrange multiplier
-    mins = [0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001]
+    mins = [0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001]
     maxs = [0.5,0.5,1.0,0.5,1.8,1.2,1.0,0.5]
     initguess=np.array([0.095,0.1,0.6,0.08,0.9,0.6,0.4,0.06])
 
     # Solve!
-
+    kwargs = {"method":"SLSQP", "bounds":list(zip(mins, maxs)),
+            "options":{'maxiter': 10, 'ftol': 1e-02}}
     solve_time = time.time()
 
     # opt_res = shgo(cost_fun,bounds=list(zip(mins,maxs)),
     #                options={'maxiter': num_iterations, 'disp': True})
-    opt_res = basinhopping(cost_fun,initguess,niter=num_iterations,stepsize=0.05)
+    # opt_res = basinhopping(cost_fun,initguess,
+    opt_res = basinhopping(cost_fun,initguess,minimizer_kwargs=kwargs,
+            niter=num_iterations,stepsize=0.05,callback=print_fun,disp=True)
     solve_time = time.time() - solve_time
 
     # Output results with optimal solution

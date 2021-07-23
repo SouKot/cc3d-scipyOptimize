@@ -3,7 +3,8 @@ current_directory=$(pwd)
 
 # necessary to enforce standard convention for numeric values specification on non-English OS
 export LC_NUMERIC="C.UTF-8"
-
+echo $1
+echo $2
 # export PREFIX_CC3D=/home/m/411_auto
 export PREFIX_CC3D=$1
 

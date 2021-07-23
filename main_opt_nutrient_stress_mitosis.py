@@ -231,7 +231,7 @@ def main():
     # Number of simulation runs per evaluation
     num_runs = len(ratio_val)
     # Maximum number of optimization iterations
-    num_iterations = 10
+    num_iterations = 400
     
     # Target horizontal center of mass after 1k MCS
     xl_sheet=pd.read_excel('VId1066coculturespheroid.xlsx',sheet_name=[0,1])

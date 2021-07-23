@@ -5,9 +5,10 @@ from nutrient_stress_mitosisSteppables import MitosisSteppable
 from nutrient_stress_mitosisSteppables import DeathSteppable
 
 
+
 def configure_simulation():
     from cc3d.core.XMLUtils import ElementCC3D
-
+    import multiprocessing as mp
     CompuCell3DElmnt = ElementCC3D(
         "CompuCell3D", {"Revision": "20200724", "Version": "4.2.2"}
     )
@@ -15,7 +16,7 @@ def configure_simulation():
     print("Current parameters value:", end=" ",flush=True)
     print(pg.input_object)
     MetadataElmnt = CompuCell3DElmnt.ElementCC3D("Metadata")
-    MetadataElmnt.ElementCC3D("NumberOfProcessors", {}, "1")
+    #MetadataElmnt.ElementCC3D("NumberOfProcessors", {}, "1")
     MetadataElmnt.ElementCC3D("DebugOutputFrequency", {}, "600")
     PottsElmnt = CompuCell3DElmnt.ElementCC3D("Potts")
     PottsElmnt.ElementCC3D("Dimensions", {"x": "256", "y": "256", "z": "1"})

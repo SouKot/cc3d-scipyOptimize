@@ -1,16 +1,19 @@
 #!/usr/bin/sh
-pyvrsn=3.8
-env=cc3d_2020
 
-dir= ${PWD}
-srcdir= ${dir}/CC3D_GIT 
-vrsn=4.2.5
+pyvrsn=3.8 # Conda python version.
+env=cc3d_2020 # conda environment for CC3D installation.
+vrsn=4.2.5  # CC3D version. Don't change it!
 vrsnwodt=${vrsn//./}
-bdir= ${dir}/cc3d_${vrsnwodt}_build
 
+dir= $HOME # Installation directory for CC3D
+srcdir= ${dir}/CC3D_GIT # Source Directory for CC3D.
+bdir= ${dir}/cc3d_${vrsnwodt}_build # Build Directory for CC3D.
+
+cd ${dir}
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
-
+source $HOME/.bashrc
+conda activate
 conda create -n $env python=$pyvrsn
 conda activate $env
 conda install -c conda-forge numpy scipy pandas jinja2 webcolors vtk=8.2 pyqt pyqtgraph deprecated qscintilla2 jinja2 chardet cmake swig=3 requests
